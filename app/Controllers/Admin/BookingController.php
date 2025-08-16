@@ -19,11 +19,12 @@ class BookingController extends BaseController
     }
 
     /**
-     * Menampilkan daftar semua booking yang masuk dengan data terkait.
+     * Menampilkan daftar booking.
+     * Superadmin melihat semua booking, admin hanya melihat booking cabangnya.
      */
     public function index()
     {
-        $bookings = $this->bookingModel
+        $builder = $this->bookingModel
             ->select('
                 jadwal_booking.*, 
                 paket_layanan.nama_paket, 
@@ -33,18 +34,20 @@ class BookingController extends BaseController
                 pelanggan.nama_lengkap as nama_pelanggan,
                 pelanggan.no_telepon
             ')
-            // Menggabungkan data dari tabel lain berdasarkan ID
-            ->join('paket_layanan', 'paket_layanan.id = jadwal_booking.id_paket_layanan') // Ambil nama paket
-            ->join('layanan', 'layanan.id = paket_layanan.id_layanan') // Ambil nama layanan utama
-            ->join('cabang', 'cabang.id = jadwal_booking.id_cabang') // Ambil nama cabang
-            ->join('pelanggan', 'pelanggan.id = jadwal_booking.id_pelanggan') // Ambil data pelanggan
-            ->join('karyawan', 'karyawan.id = jadwal_booking.id_karyawan', 'left') // Ambil nama karyawan (jika ada)
-            ->orderBy('jadwal_booking.created_at', 'DESC')
-            ->findAll();
+            ->join('paket_layanan', 'paket_layanan.id = jadwal_booking.id_paket_layanan')
+            ->join('layanan', 'layanan.id = paket_layanan.id_layanan')
+            ->join('cabang', 'cabang.id = jadwal_booking.id_cabang')
+            ->join('pelanggan', 'pelanggan.id = jadwal_booking.id_pelanggan')
+            ->join('karyawan', 'karyawan.id = jadwal_booking.id_karyawan', 'left');
+
+        // Filter data jika yang login adalah admin cabang
+        if (session()->get('role') === 'admin') {
+            $builder->where('jadwal_booking.id_cabang', session()->get('id_cabang'));
+        }
 
         $data = [
             'title'    => 'Manajemen Booking',
-            'bookings' => $bookings
+            'bookings' => $builder->orderBy('jadwal_booking.created_at', 'DESC')->findAll()
         ];
         return view('admin/booking/index', $data);
     }
@@ -54,7 +57,6 @@ class BookingController extends BaseController
      */
     public function edit($id = null)
     {
-        // Validasi awal untuk memastikan ID adalah angka
         if (!$id || !is_numeric($id)) {
             throw PageNotFoundException::forPageNotFound();
         }
@@ -63,6 +65,11 @@ class BookingController extends BaseController
 
         if (empty($booking)) {
             throw PageNotFoundException::forPageNotFound();
+        }
+
+        // Keamanan: Pastikan admin hanya bisa mengakses booking di cabangnya
+        if (session()->get('role') === 'admin' && $booking['id_cabang'] != session()->get('id_cabang')) {
+            throw PageNotFoundException::forPageNotFound('Anda tidak memiliki akses ke booking ini.');
         }
 
         $data = [
@@ -78,13 +85,14 @@ class BookingController extends BaseController
      */
     public function update($id = null)
     {
-        // Validasi awal untuk memastikan ID adalah angka
-        if (!$id || !is_numeric($id)) {
-            throw PageNotFoundException::forPageNotFound();
+        // Lakukan pengecekan yang sama seperti di 'edit' sebelum update
+        $booking = $this->bookingModel->find($id);
+        if (session()->get('role') === 'admin' && $booking['id_cabang'] != session()->get('id_cabang')) {
+            return redirect()->to('/admin/booking')->with('error', 'Akses ditolak.');
         }
 
         $this->bookingModel->update($id, [
-            'id_karyawan' => $this->request->getPost('id_karyawan') ?: null, // Set NULL jika kosong
+            'id_karyawan' => $this->request->getPost('id_karyawan') ?: null,
             'status'      => $this->request->getPost('status'),
         ]);
         return redirect()->to('/admin/booking')->with('success', 'Booking berhasil diperbarui.');
@@ -95,29 +103,49 @@ class BookingController extends BaseController
      */
     public function delete($id = null)
     {
-        // Validasi awal untuk memastikan ID adalah angka
-        if (!$id || !is_numeric($id)) {
-            throw PageNotFoundException::forPageNotFound();
+        // Lakukan pengecekan yang sama seperti di 'edit' sebelum hapus
+        $booking = $this->bookingModel->find($id);
+        if (session()->get('role') === 'admin' && $booking['id_cabang'] != session()->get('id_cabang')) {
+            return redirect()->to('/admin/booking')->with('error', 'Akses ditolak.');
         }
 
         $this->bookingModel->delete($id);
         return redirect()->to('/admin/booking')->with('success', 'Booking berhasil dihapus.');
     }
 
+    /**
+     * Menampilkan halaman kalender booking.
+     */
+    public function kalender()
+    {
+        $data = ['title' => 'Kalender Booking'];
+        return view('admin/booking/kalender', $data);
+    }
+
+    /**
+     * Menyediakan data booking dalam format JSON untuk FullCalendar.
+     * Superadmin melihat semua, admin hanya melihat data cabangnya.
+     */
     public function getBookingsApi()
     {
-        $bookings = $this->bookingModel
+        $builder = $this->bookingModel
             ->select('
-            jadwal_booking.id, 
-            jadwal_booking.tanggal_booking, 
-            jadwal_booking.jam_booking, 
-            jadwal_booking.status,
-            pelanggan.nama_lengkap as nama_pelanggan,
-            paket_layanan.nama_paket
-        ')
+                jadwal_booking.id, 
+                jadwal_booking.tanggal_booking, 
+                jadwal_booking.jam_booking, 
+                jadwal_booking.status,
+                pelanggan.nama_lengkap as nama_pelanggan,
+                paket_layanan.nama_paket
+            ')
             ->join('pelanggan', 'pelanggan.id = jadwal_booking.id_pelanggan')
-            ->join('paket_layanan', 'paket_layanan.id = jadwal_booking.id_paket_layanan')
-            ->findAll();
+            ->join('paket_layanan', 'paket_layanan.id = jadwal_booking.id_paket_layanan');
+
+        // Filter data jika yang login adalah admin cabang
+        if (session()->get('role') === 'admin') {
+            $builder->where('jadwal_booking.id_cabang', session()->get('id_cabang'));
+        }
+
+        $bookings = $builder->findAll();
 
         $events = [];
         foreach ($bookings as $booking) {
@@ -132,7 +160,9 @@ class BookingController extends BaseController
         return $this->response->setJSON($events);
     }
 
-    // Fungsi pembantu untuk memberikan warna berdasarkan status
+    /**
+     * Fungsi pembantu untuk memberikan warna pada event kalender berdasarkan status.
+     */
     private function getStatusColor($status)
     {
         switch ($status) {
@@ -147,11 +177,5 @@ class BookingController extends BaseController
             default:
                 return '#007bff'; // Biru
         }
-    }
-
-    public function kalender()
-    {
-        $data = ['title' => 'Kalender Booking'];
-        return view('admin/booking/kalender', $data);
     }
 }

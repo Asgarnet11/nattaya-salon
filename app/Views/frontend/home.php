@@ -491,9 +491,9 @@
                     <a href="/booking" class="btn btn-dark btn-lg">
                         <i class="bi bi-calendar-plus me-2"></i>Book Sekarang
                     </a>
-                    <a href="/kontak" class="btn btn-outline-dark btn-lg">
+                    <!-- <a href="/kontak" class="btn btn-outline-dark btn-lg">
                         <i class="bi bi-chat-dots me-2"></i>Konsultasi Gratis
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>

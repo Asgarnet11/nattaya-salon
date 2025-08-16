@@ -555,23 +555,25 @@
             </div>
 
             <!-- System Section -->
-            <div class="nav-section">
-                <div class="nav-section-title">Sistem</div>
-                <ul class="nav nav-pills flex-column">
-                    <li class="nav-item">
-                        <a href="/admin/cabang" class="nav-link">
-                            <i class="bi bi-building"></i>
-                            <span>Cabang</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/admin/users" class="nav-link">
-                            <i class="bi bi-person-gear"></i>
-                            <span>User Management</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <?php if (session()->get('role') === 'superadmin'): ?>
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistem</div>
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="/admin/cabang" class="nav-link">
+                                <i class="bi bi-building"></i>
+                                <span>Cabang</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/users" class="nav-link">
+                                <i class="bi bi-person-gear"></i>
+                                <span>User Management</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Footer -->

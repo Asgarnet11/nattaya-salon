@@ -127,6 +127,8 @@
                                     <option value="14:00" <?= old('jam_booking') == '14:00' ? 'selected' : '' ?>>14:00 WIB</option>
                                     <option value="15:00" <?= old('jam_booking') == '15:00' ? 'selected' : '' ?>>15:00 WIB</option>
                                     <option value="16:00" <?= old('jam_booking') == '16:00' ? 'selected' : '' ?>>16:00 WIB</option>
+                                    <option value="17:00" <?= old('jam_booking') == '17:00' ? 'selected' : '' ?>>17:00 WIB</option>
+                                    <option value="18:00" <?= old('jam_booking') == '18:00' ? 'selected' : '' ?>>18:00 WIB</option>
                                 </select>
                                 <div class="invalid-feedback">Silakan pilih jam booking.</div>
                                 <div class="form-text">
