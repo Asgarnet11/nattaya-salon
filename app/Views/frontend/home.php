@@ -5,8 +5,8 @@
 <style>
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(rgba(128, 0, 32, 0.8), rgba(128, 0, 32, 0.6)),
-            url('/public/asset/images/hero-bg.jpg') center/cover;
+        background: linear-gradient(rgba(128, 0, 32, 0.8), rgba(128, 0, 32, 0)),
+            url('/asset/images/hero-bg.jpg') center/cover;
         color: white;
         position: relative;
         overflow: hidden;
@@ -29,7 +29,7 @@
         background-size: 60px 60px;
         background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
         opacity: 0.3;
-        animation: float 20s ease-in-out infinite;
+        animation: float 5s ease-in-out infinite;
     }
 
     @keyframes float {
@@ -190,7 +190,7 @@
     /* Gallery Section */
     .gallery-section {
         background: linear-gradient(rgba(128, 0, 32, 0.95), rgba(128, 0, 32, 0.9)),
-            url('/public/asset/images/salon-bg.jpg') center/cover;
+            url('/asset/images/salon-bg.jpg') center/cover;
         color: white;
         position: relative;
     }

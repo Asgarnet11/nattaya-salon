@@ -508,6 +508,12 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="/admin/booking/kalender" class="nav-link">
+                            <i class="bi bi-calendar-date"></i>
+                            <span>Kalender booking</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
 

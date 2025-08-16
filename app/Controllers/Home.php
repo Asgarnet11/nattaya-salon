@@ -208,4 +208,14 @@ class Home extends BaseController
         $this->bookingModel->update($id, ['status' => 'canceled']);
         return redirect()->to('/riwayat-booking')->with('success', 'Booking berhasil dibatalkan.');
     }
+
+    public function lokasi()
+    {
+        $cabangModel = new \App\Models\CabangModel();
+        $data = [
+            'title'  => 'Lokasi Kami',
+            'cabang' => $cabangModel->findAll(),
+        ];
+        return view('frontend/lokasi', $data);
+    }
 }

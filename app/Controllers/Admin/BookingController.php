@@ -103,4 +103,55 @@ class BookingController extends BaseController
         $this->bookingModel->delete($id);
         return redirect()->to('/admin/booking')->with('success', 'Booking berhasil dihapus.');
     }
+
+    public function getBookingsApi()
+    {
+        $bookings = $this->bookingModel
+            ->select('
+            jadwal_booking.id, 
+            jadwal_booking.tanggal_booking, 
+            jadwal_booking.jam_booking, 
+            jadwal_booking.status,
+            pelanggan.nama_lengkap as nama_pelanggan,
+            paket_layanan.nama_paket
+        ')
+            ->join('pelanggan', 'pelanggan.id = jadwal_booking.id_pelanggan')
+            ->join('paket_layanan', 'paket_layanan.id = jadwal_booking.id_paket_layanan')
+            ->findAll();
+
+        $events = [];
+        foreach ($bookings as $booking) {
+            $events[] = [
+                'title' => esc($booking['nama_pelanggan'] . ' - ' . $booking['nama_paket']),
+                'start' => $booking['tanggal_booking'] . 'T' . $booking['jam_booking'],
+                'url'   => site_url('admin/booking/' . $booking['id'] . '/edit'),
+                'color' => $this->getStatusColor($booking['status'])
+            ];
+        }
+
+        return $this->response->setJSON($events);
+    }
+
+    // Fungsi pembantu untuk memberikan warna berdasarkan status
+    private function getStatusColor($status)
+    {
+        switch ($status) {
+            case 'confirmed':
+                return '#28a745'; // Hijau
+            case 'pending':
+                return '#ffc107'; // Kuning
+            case 'completed':
+                return '#6c757d'; // Abu-abu
+            case 'canceled':
+                return '#dc3545'; // Merah
+            default:
+                return '#007bff'; // Biru
+        }
+    }
+
+    public function kalender()
+    {
+        $data = ['title' => 'Kalender Booking'];
+        return view('admin/booking/kalender', $data);
+    }
 }

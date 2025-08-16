@@ -362,12 +362,12 @@
                     <div class="col-lg-2 col-md-6">
                         <div class="footer-section">
                             <h5>Layanan</h5>
-                            <a href="/layanan/facial" class="footer-link">Facial Treatment</a>
-                            <a href="/layanan/hair" class="footer-link">Hair Styling</a>
-                            <a href="/layanan/nail" class="footer-link">Nail Art</a>
-                            <a href="/layanan/makeup" class="footer-link">Makeup</a>
-                            <a href="/layanan/spa" class="footer-link">Body Spa</a>
-                            <a href="/layanan/package" class="footer-link">Paket Hemat</a>
+                            <a href="/layanan" class="footer-link">Facial Treatment</a>
+                            <a href="/layanan" class="footer-link">Hair Styling</a>
+                            <a href="/layanan" class="footer-link">Nail Art</a>
+                            <a href="/layanan" class="footer-link">Makeup</a>
+                            <a href="/layanan" class="footer-link">Body Spa</a>
+                            <a href="/layanan" class="footer-link">Paket Hemat</a>
                         </div>
                     </div>
 

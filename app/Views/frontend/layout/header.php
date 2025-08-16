@@ -307,9 +307,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= (strpos(current_url(), 'kontak') !== false) ? 'active' : '' ?>"
-                            href="<?= base_url('/kontak') ?>">
-                            Kontak
+                        <a class="nav-link <?= (strpos(current_url(), 'lokasi') !== false) ? 'active' : '' ?>"
+                            href="<?= base_url('/lokasi') ?>">
+                            Lokasi
                         </a>
                     </li>
 
