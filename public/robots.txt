@@ -1,2 +1,14 @@
+# Mengizinkan semua robot mesin pencari (Google, Bing, dll)
 User-agent: *
-Disallow: 
+
+# Direktori dan halaman yang TIDAK BOLEH diakses oleh robot
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /booking
+Disallow: /riwayat-booking
+Disallow: /logout
+Disallow: /api/
+
+# Lokasi Sitemap untuk membantu Google mengindeks halaman yang penting
+Sitemap: https://nattaya-salon.project-site.my.id/sitemap.xml

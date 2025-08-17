@@ -9,6 +9,12 @@ use CodeIgniter\Router\RouteCollection;
 //====================================================================
 // 1. Frontend / Rute Publik (Untuk Halaman Pelanggan)
 //====================================================================
+$routes->get('/test-xml', function () {
+    header("Content-type: text/xml;charset=UTF-8");
+    echo '<?xml version="1.0" encoding="UTF-8" ?>';
+    echo '<test>Hello World</test>';
+});
+$routes->get('/sitemap.xml', 'SitemapController::index');
 $routes->get('/', 'Home::index');
 $routes->get('/lokasi', 'Home::lokasi');
 $routes->get('/layanan', 'Home::layanan');

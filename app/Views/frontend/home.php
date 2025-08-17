@@ -6,7 +6,7 @@
     /* Hero Section */
     .hero-section {
         background: linear-gradient(rgba(128, 0, 32, 0.8), rgba(128, 0, 32, 0)),
-            url('/asset/images/hero-bg.jpg') center/cover;
+            url('/asset/images/test-bg.png') center/cover;
         color: white;
         position: relative;
         overflow: hidden;
@@ -22,10 +22,6 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(45deg, rgba(128, 0, 32, 0.1) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(255, 215, 0, 0.1) 25%, transparent 25%),
-            linear-gradient(45deg, transparent 75%, rgba(128, 0, 32, 0.1) 75%),
-            linear-gradient(-45deg, transparent 75%, rgba(255, 215, 0, 0.1) 75%);
         background-size: 60px 60px;
         background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
         opacity: 0.3;
@@ -64,20 +60,7 @@
         animation: fadeInUp 1s ease-out 0.2s both;
     }
 
-    .hero-section .btn {
-        animation: fadeInUp 1s ease-out 0.4s both;
-        padding: 1rem 2.5rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        border-radius: 50px;
-        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
-        transition: all 0.3s ease;
-    }
 
-    .hero-section .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
-    }
 
     @keyframes fadeInUp {
         from {
@@ -190,7 +173,7 @@
     /* Gallery Section */
     .gallery-section {
         background: linear-gradient(rgba(128, 0, 32, 0.95), rgba(128, 0, 32, 0.9)),
-            url('/asset/images/salon-bg.jpg') center/cover;
+            url('/asset/images/test-bg.png') center/cover;
         color: white;
         position: relative;
     }
@@ -491,9 +474,7 @@
                     <a href="/booking" class="btn btn-dark btn-lg">
                         <i class="bi bi-calendar-plus me-2"></i>Book Sekarang
                     </a>
-                    <!-- <a href="/kontak" class="btn btn-outline-dark btn-lg">
-                        <i class="bi bi-chat-dots me-2"></i>Konsultasi Gratis
-                    </a> -->
+
                 </div>
             </div>
         </div>

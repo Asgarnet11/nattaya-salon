@@ -441,12 +441,6 @@
                             &copy; 2025 <strong>Nattaya Salon Kendari</strong>. All Rights Reserved.
                         </p>
                     </div>
-                    <div class="col-md-6 text-md-end">
-                        <p class="copyright-text">
-                            Made with <i class="bi bi-heart-fill text-danger"></i> by
-                            <a href="#" class="developer-credit">Tim Developer</a>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

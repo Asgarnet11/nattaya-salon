@@ -22,8 +22,19 @@ class AuthController extends BaseController
      */
     public function proses_register()
     {
-        $pelangganModel = new PelangganModel();
+        // Aturan validasi
+        $rules = [
+            'nama_lengkap' => 'required',
+            'email'        => 'required|valid_email|is_unique[pelanggan.email]',
+            'no_telepon'   => 'required',
+            'password'     => 'required|min_length[6]',
+        ];
 
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $pelangganModel = new \App\Models\PelangganModel();
         $pelangganModel->save([
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
             'email'        => $this->request->getPost('email'),
@@ -39,7 +50,6 @@ class AuthController extends BaseController
      */
     public function login_form()
     {
-        // Jika sudah login, jangan tampilkan form lagi, redirect ke booking
         if (session()->get('pelanggan_logged_in')) {
             return redirect()->to('/booking');
         }
@@ -55,17 +65,14 @@ class AuthController extends BaseController
     public function proses_login()
     {
         $session = session();
-        $pelangganModel = new PelangganModel();
+        $pelangganModel = new \App\Models\PelangganModel();
 
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
-        // Cari pelanggan berdasarkan email
         $pelanggan = $pelangganModel->where('email', $email)->first();
 
-        // Verifikasi apakah pelanggan ada dan passwordnya cocok
         if ($pelanggan && password_verify($password, $pelanggan['password'])) {
-            // Jika berhasil, siapkan data untuk session
             $session_data = [
                 'pelanggan_id'        => $pelanggan['id'],
                 'pelanggan_nama'      => $pelanggan['nama_lengkap'],
@@ -73,11 +80,9 @@ class AuthController extends BaseController
             ];
             $session->set($session_data);
 
-            // Arahkan ke halaman booking
             return redirect()->to('/booking');
         }
 
-        // Jika gagal, kembali ke halaman login dengan pesan error
         $session->setFlashdata('error', 'Email atau Password yang Anda masukkan salah.');
         return redirect()->to('/login');
     }
