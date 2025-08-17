@@ -73,7 +73,7 @@
                                         <?php if (!empty($c['alamat'])): ?>
                                             <div class="info-item mb-3">
                                                 <div class="info-icon">
-                                                    <i class="fas fa-map-marker-alt text-gold"></i>
+                                                    <i class="fas fa-map text-gold"></i>
                                                 </div>
                                                 <div class="info-content">
                                                     <strong class="text-dark">Alamat</strong>
@@ -106,7 +106,7 @@
                                             <div class="info-content">
                                                 <strong class="text-dark">Jam Operasional</strong>
                                                 <p class="text-muted mb-0">
-                                                    <?= !empty($c['jam_operasional']) ? esc($c['jam_operasional']) : 'Senin - Minggu: 09.00 - 21.00 WITA' ?>
+                                                    <?= !empty($c['jam_operasional']) ? esc($c['jam_operasional']) : 'Senin - Minggu: 09.00 - 20.00 WITA' ?>
                                                 </p>
                                             </div>
                                         </div>

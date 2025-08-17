@@ -9,6 +9,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- descriptions -->
+    <meta name="description" content="<?= esc($meta_description ?? 'Nattaya Salon Kendari menawarkan layanan kecantikan dan relaksasi profesional, dengan fasilitas yang modern dan theraphis yang berpengalaman di bidangnya, Ayo booking sekarang juga') ?>">
 
     <style>
         body {
