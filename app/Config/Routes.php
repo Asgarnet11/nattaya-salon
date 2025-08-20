@@ -31,6 +31,10 @@ $routes->post('/booking', 'Home::proses_booking', ['filter' => 'auth_pelanggan']
 $routes->get('/riwayat-booking', 'Home::riwayat_booking', ['filter' => 'auth_pelanggan']);
 
 
+$routes->get('/pembayaran/(:num)', 'Home::pembayaran/$1', ['filter' => 'auth_pelanggan']);
+$routes->get('/konfirmasi-pembayaran/(:num)', 'Home::konfirmasi_pembayaran_form/$1', ['filter' => 'auth_pelanggan']);
+$routes->post('/proses-konfirmasi', 'Home::proses_konfirmasi', ['filter' => 'auth_pelanggan']);
+
 //====================================================================
 // 2. Rute Otentikasi Pelanggan (Publik)
 //====================================================================

@@ -23,7 +23,6 @@ class Home extends BaseController
 
     public function __construct()
     {
-        // Menginisialisasi semua model yang dibutuhkan
         $this->galeriModel = new GaleriModel();
         $this->layananModel = new LayananModel();
         $this->gambarLayananModel = new GambarLayananModel();
@@ -31,7 +30,7 @@ class Home extends BaseController
         $this->artikelModel = new ArtikelModel();
         $this->cabangModel = new CabangModel();
         $this->bookingModel = new BookingModel();
-        helper('text'); // Memuat text helper sekali untuk semua metode
+        helper('text');
     }
 
     public function index()
@@ -45,6 +44,7 @@ class Home extends BaseController
 
         $data = [
             'title'              => 'Selamat Datang',
+            'meta_description'   => 'Nattaya Salon Kendari adalah salon kecantikan terkemuka di Kendari dengan 3 cabang. Nikmati layanan profesional mulai dari haircut, facial, hingga spa.',
             'layanan_unggulan'   => $layananUnggulan,
             'galeri_terbaru'     => $this->galeriModel->orderBy('id', 'DESC')->limit(4)->findAll(),
         ];
@@ -61,6 +61,7 @@ class Home extends BaseController
 
         $data = [
             'title'   => 'Daftar Layanan Kami',
+            'meta_description'   => 'Lihat semua layanan profesional yang kami tawarkan di Nattaya Salon Kendari, mulai dari perawatan rambut, wajah, hingga tubuh.',
             'layanan' => $layananData
         ];
         return view('frontend/layanan', $data);
@@ -73,12 +74,12 @@ class Home extends BaseController
         }
 
         $data = [
-            'title'   => $layanan['nama_layanan'],
-            'layanan' => $layanan,
-            'gambar'  => $this->gambarLayananModel->where('id_layanan', $id)->findAll(),
-            'paket'   => $this->paketLayananModel->where('id_layanan', $id)->findAll(),
+            'title'            => $layanan['nama_layanan'],
+            'meta_description'   => esc(word_limiter($layanan['deskripsi'], 20)),
+            'layanan'          => $layanan,
+            'gambar'           => $this->gambarLayananModel->where('id_layanan', $id)->findAll(),
+            'paket'            => $this->paketLayananModel->where('id_layanan', $id)->findAll(),
         ];
-
         return view('frontend/detail_layanan', $data);
     }
 
@@ -86,6 +87,7 @@ class Home extends BaseController
     {
         $data = [
             'title'  => 'Galeri Kami',
+            'meta_description'   => 'Lihat koleksi foto hasil kerja dari para stylist profesional kami di Nattaya Salon Kendari.',
             'galeri' => $this->galeriModel->orderBy('id', 'DESC')->findAll()
         ];
         return view('frontend/galeri', $data);
@@ -95,6 +97,7 @@ class Home extends BaseController
     {
         $data = [
             'title'   => 'Artikel & Tips',
+            'meta_description'   => 'Baca artikel dan tips terbaru seputar dunia kecantikan, rambut, dan perawatan diri dari para ahli di Nattaya Salon.',
             'artikel' => $this->artikelModel->orderBy('id', 'DESC')->findAll(),
         ];
         return view('frontend/artikel', $data);
@@ -108,15 +111,20 @@ class Home extends BaseController
 
         $data = [
             'title'   => $artikel['judul'],
+            'meta_description'   => esc(word_limiter($artikel['isi_artikel'], 20)),
             'artikel' => $artikel,
         ];
         return view('frontend/detail_artikel', $data);
     }
 
-    public function kontak()
+    public function lokasi()
     {
-        $data = ['title' => 'Hubungi Kami'];
-        return view('frontend/kontak', $data);
+        $data = [
+            'title'  => 'Lokasi Kami',
+            'meta_description'   => 'Temukan 3 lokasi cabang Nattaya Salon di Kendari. Dapatkan alamat, nomor telepon, dan petunjuk arah di sini.',
+            'cabang' => $this->cabangModel->findAll(),
+        ];
+        return view('frontend/lokasi', $data);
     }
 
     public function booking()
@@ -131,41 +139,76 @@ class Home extends BaseController
 
     public function proses_booking()
     {
-        // Aturan validasi
         $rules = [
             'id_cabang'        => 'required|is_natural_no_zero',
             'id_paket_layanan' => 'required|is_natural_no_zero',
             'tanggal_booking'  => 'required|valid_date[Y-m-d]',
             'jam_booking'      => 'required'
         ];
-
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // Validasi tanggal tidak boleh di masa lalu
-        if ($this->request->getPost('tanggal_booking') < date('Y-m-d')) {
-            return redirect()->back()->withInput()->with('error', 'Tanggal booking tidak boleh di masa lalu.');
-        }
-
-        // Simpan data ke database
         $this->bookingModel->save([
             'id_pelanggan'     => session()->get('pelanggan_id'),
             'id_cabang'        => $this->request->getPost('id_cabang'),
             'id_paket_layanan' => $this->request->getPost('id_paket_layanan'),
             'tanggal_booking'  => $this->request->getPost('tanggal_booking'),
             'jam_booking'      => $this->request->getPost('jam_booking'),
-            'status'           => 'pending',
+            'status'           => 'waiting_payment',
         ]);
+        $idBookingBaru = $this->bookingModel->getInsertID();
+        return redirect()->to('/pembayaran/' . $idBookingBaru);
+    }
 
-        return redirect()->to('/booking')->with('success', 'Booking Anda berhasil dikirim! Kami akan segera menghubungi Anda untuk konfirmasi.');
+    public function pembayaran($id_booking)
+    {
+        $booking = $this->bookingModel
+            ->select('jadwal_booking.*, paket_layanan.nama_paket, paket_layanan.harga')
+            ->join('paket_layanan', 'paket_layanan.id = jadwal_booking.id_paket_layanan')
+            ->find($id_booking);
+
+        if (!$booking || $booking['id_pelanggan'] != session()->get('pelanggan_id')) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        $data = [
+            'title'   => 'Instruksi Pembayaran',
+            'booking' => $booking
+        ];
+        return view('frontend/pembayaran', $data);
+    }
+
+    public function konfirmasi_pembayaran_form($id_booking)
+    {
+        $data = [
+            'title'      => 'Konfirmasi Pembayaran',
+            'id_booking' => $id_booking
+        ];
+        return view('frontend/konfirmasi_pembayaran', $data);
+    }
+
+    public function proses_konfirmasi()
+    {
+        $id_booking = $this->request->getPost('id_booking');
+        $fileBukti = $this->request->getFile('bukti_pembayaran');
+
+        if ($fileBukti && $fileBukti->isValid() && !$fileBukti->hasMoved()) {
+            $namaFile = $fileBukti->getRandomName();
+            $fileBukti->move('uploads/bukti_pembayaran', $namaFile);
+
+            $this->bookingModel->update($id_booking, [
+                'bukti_pembayaran' => $namaFile,
+                'status'           => 'waiting_verification'
+            ]);
+
+            return redirect()->to('/riwayat-booking')->with('success', 'Konfirmasi pembayaran berhasil dikirim. Mohon tunggu verifikasi dari admin.');
+        }
+        return redirect()->back()->with('error', 'Gagal mengupload bukti pembayaran. Pastikan Anda sudah memilih file.');
     }
 
     public function getPaketByLayanan($id_layanan)
     {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403);
-        }
         $paket = $this->paketLayananModel->where('id_layanan', $id_layanan)->findAll();
         return $this->response->setJSON($paket);
     }
@@ -179,43 +222,13 @@ class Home extends BaseController
             ->join('layanan', 'layanan.id = paket_layanan.id_layanan')
             ->join('cabang', 'cabang.id = jadwal_booking.id_cabang')
             ->where('jadwal_booking.id_pelanggan', $id_pelanggan)
-            ->orderBy('jadwal_booking.tanggal_booking', 'DESC')
+            ->orderBy('jadwal_booking.created_at', 'DESC')
             ->findAll();
 
         $data = [
             'title'   => 'Riwayat Booking Saya',
             'riwayat' => $riwayat,
         ];
-
         return view('frontend/riwayat_booking', $data);
-    }
-
-    public function batalkan_booking($id)
-    {
-        $booking = $this->bookingModel->where('id', $id)
-            ->where('id_pelanggan', session()->get('pelanggan_id'))
-            ->first();
-
-        if (!$booking) {
-            return redirect()->to('/riwayat-booking')->with('error', 'Booking tidak ditemukan.');
-        }
-
-        // Hanya booking pending yang bisa dibatalkan oleh pelanggan
-        if ($booking['status'] !== 'pending') {
-            return redirect()->to('/riwayat-booking')->with('error', 'Booking ini tidak dapat dibatalkan.');
-        }
-
-        $this->bookingModel->update($id, ['status' => 'canceled']);
-        return redirect()->to('/riwayat-booking')->with('success', 'Booking berhasil dibatalkan.');
-    }
-
-    public function lokasi()
-    {
-        $cabangModel = new \App\Models\CabangModel();
-        $data = [
-            'title'  => 'Lokasi Kami',
-            'cabang' => $cabangModel->findAll(),
-        ];
-        return view('frontend/lokasi', $data);
     }
 }

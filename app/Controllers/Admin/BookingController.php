@@ -19,8 +19,8 @@ class BookingController extends BaseController
     }
 
     /**
-     * Menampilkan daftar booking.
-     * Superadmin melihat semua booking, admin hanya melihat booking cabangnya.
+     * Menampilkan daftar semua booking yang masuk.
+     * Superadmin melihat semua, admin hanya melihat data cabangnya.
      */
     public function index()
     {
@@ -53,7 +53,7 @@ class BookingController extends BaseController
     }
 
     /**
-     * Menampilkan halaman untuk mengelola satu booking.
+     * Menampilkan halaman untuk mengelola satu booking (ubah status/tugaskan karyawan).
      */
     public function edit($id = null)
     {
@@ -81,11 +81,15 @@ class BookingController extends BaseController
     }
 
     /**
-     * Memproses update status atau penugasan karyawan.
+     * Memproses update status atau penugasan karyawan untuk sebuah booking.
      */
     public function update($id = null)
     {
-        // Lakukan pengecekan yang sama seperti di 'edit' sebelum update
+        if (!$id || !is_numeric($id)) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        // Lakukan pengecekan keamanan sebelum update
         $booking = $this->bookingModel->find($id);
         if (session()->get('role') === 'admin' && $booking['id_cabang'] != session()->get('id_cabang')) {
             return redirect()->to('/admin/booking')->with('error', 'Akses ditolak.');
@@ -103,7 +107,11 @@ class BookingController extends BaseController
      */
     public function delete($id = null)
     {
-        // Lakukan pengecekan yang sama seperti di 'edit' sebelum hapus
+        if (!$id || !is_numeric($id)) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        // Lakukan pengecekan keamanan sebelum hapus
         $booking = $this->bookingModel->find($id);
         if (session()->get('role') === 'admin' && $booking['id_cabang'] != session()->get('id_cabang')) {
             return redirect()->to('/admin/booking')->with('error', 'Akses ditolak.');
@@ -124,7 +132,6 @@ class BookingController extends BaseController
 
     /**
      * Menyediakan data booking dalam format JSON untuk FullCalendar.
-     * Superadmin melihat semua, admin hanya melihat data cabangnya.
      */
     public function getBookingsApi()
     {
@@ -168,14 +175,16 @@ class BookingController extends BaseController
         switch ($status) {
             case 'confirmed':
                 return '#28a745'; // Hijau
-            case 'pending':
-                return '#ffc107'; // Kuning
-            case 'completed':
+            case 'waiting_verification':
+                return '#0d6efd'; // Biru
+            case 'waiting_payment':
                 return '#6c757d'; // Abu-abu
             case 'canceled':
                 return '#dc3545'; // Merah
+            case 'completed':
+                return '#198754'; // Hijau Tua
             default:
-                return '#007bff'; // Biru
+                return '#ffc107'; // Kuning (untuk status lain seperti 'pending')
         }
     }
 }

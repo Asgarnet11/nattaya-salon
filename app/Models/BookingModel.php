@@ -9,7 +9,6 @@ class BookingModel extends Model
     protected $table            = 'jadwal_booking';
     protected $primaryKey       = 'id';
 
-    // Perhatikan perubahan di baris ini: id_layanan diganti menjadi id_paket_layanan
     protected $allowedFields    = [
         'id_pelanggan',
         'id_cabang',
@@ -18,6 +17,7 @@ class BookingModel extends Model
         'tanggal_booking',
         'jam_booking',
         'status',
+        'bukti_pembayaran', // <-- PASTIKAN FIELD INI ADA DI SINI
         'created_at'
     ];
 
